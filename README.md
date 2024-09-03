@@ -1,6 +1,12 @@
 # inventory
 
-Opinionated eBay tools for managing inventory.
+> Opinionated webapp for managing a physical eBay inventory.
+
+This might be useful if you
+
+* purchase and flip items on ebay
+* perform routines on the items (e.g. repairing or refurbishing 10 items at a time)
+* want to track the status of each item
 
 Stack
 * python 3.12
@@ -16,3 +22,5 @@ Stack
 poetry init
 make run
 ```
+
+Visit http://localhost:8000

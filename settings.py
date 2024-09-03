@@ -14,7 +14,7 @@ from pathlib import Path
 from env_utils import get_bool, get_env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-import secrets
+import local_secrets
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = secrets.SECRET_KEY
+SECRET_KEY = local_secrets.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -131,7 +131,7 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EBAY_REDIRECT_URI = secrets.EBAY_REDIRECT_URI
-EBAY_CLIENT_SECRET = secrets.EBAY_CLIENT_SECRET
-EBAY_SCOPES = secrets.EBAY_SCOPES
-EBAY_LOGIN_URL = secrets.EBAY_LOGIN_URL
+EBAY_REDIRECT_URI = local_secrets.EBAY_REDIRECT_URI
+EBAY_CLIENT_SECRET = local_secrets.EBAY_CLIENT_SECRET
+EBAY_SCOPES = local_secrets.EBAY_SCOPES
+EBAY_LOGIN_URL = local_secrets.EBAY_LOGIN_URL

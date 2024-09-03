@@ -1,5 +1,5 @@
 *.pyc
-secrets.py
+local_secrets.py
 staticfiles/
 __pycache__/
 .idea/
