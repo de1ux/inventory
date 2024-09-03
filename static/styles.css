@@ -1,0 +1,8 @@
+.log {
+  height: 400px;
+  overflow: auto;
+  flex-direction: column-reverse;
+  display: flex;
+  border: 1px solid;
+  width: 400px;
+}

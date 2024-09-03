@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "inventory"
+version = "0.1.0"
+description = ""
+authors = ["Nathan Evans <nathan@de1ux.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+django = "^5.1"
+psycopg2-binary = "^2.9.9"
+django-rest-framework = "^0.1.0"
+django-cors-headers = "^4.4.0"
+requests = "^2.32.3"
+python-env-utils = "^0.4.1"
+django-crispy-forms = "^2.3"
+crispy-bootstrap4 = "^2024.1"
+xmltodict = "^0.13.0"
+uvicorn = "^0.30.6"
+watchfiles = "^0.24.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

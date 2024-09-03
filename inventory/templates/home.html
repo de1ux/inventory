@@ -1,0 +1,50 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<script>
+    function refreshPurchases() {
+        let purchases = document.getElementById("purchases")
+        if (purchases.hasAttribute("hx-ext")) {
+            purchases.removeAttribute("hx-ext")
+            htmx.process(document.body);
+        }
+        purchases.setAttribute("hx-ext", "sse")
+        htmx.process(document.body);
+    }
+</script>
+
+<h1>Inventory</h1>
+
+<div hx-get="{% url 'refresh_token' %}" hx-swap="innerHTML" hx-trigger="load">Checking token...</div>
+
+<h2>Tools</h2>
+<button onclick="refreshPurchases()">Refresh purchases</button>
+<div class="log">
+    <div id="purchases" sse-connect="{% url 'refresh_purchases' %}" hx-swap="beforebegin" sse-swap="log"
+         sse-close="done"></div>
+</div>
+
+<h2>Purchases</h2>
+
+<table>
+    <tr>
+        <th>Id</th>
+        <th></th>
+        <th>Item</th>
+        <th>Price</th>
+        <th>Links</th>
+    </tr>
+    {% for item in items %}
+    <tr>
+        <td>
+            <input type="text" value="{{ item.system_id }}" hx-patch="{% url 'item_detail' pk=item.item_id %}" hx-trigger="blur" hx-vals="js:{ 'id': '{{ item.item_id }}', 'system_id': event.target.subl value }" />
+        </td>
+        <td>{{ item.bought_date }}</td>
+        <td>{{ item.title }}</td>
+        <td>{{ item.bought_price }}</td>
+        <td><a target="_blank" href="{{ item.order_id_url }}">Order</a></td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

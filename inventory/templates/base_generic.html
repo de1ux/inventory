@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  {% block title %}<title>Inventory</title>{% endblock %}
+  <meta charset="utf-8">
+
+  {% load static %}
+  <script src="https://unpkg.com/htmx.org@2.0.2"></script>
+  <script src="https://unpkg.com/htmx-ext-sse@2.2.2/sse.js"></script>  <!-- Add additional CSS in static file -->
+  <link rel="stylesheet" href="{% static 'styles.css' %}" />
+
+
+</head>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+
+{% block content %}{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+*.pyc
+secrets.py
+staticfiles/
+__pycache__/
+.idea/
+db.sqlite3
