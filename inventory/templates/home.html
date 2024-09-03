@@ -11,7 +11,25 @@
         purchases.setAttribute("hx-ext", "sse")
         htmx.process(document.body);
     }
+
+    $(document).ready(function () {
+        let table = new DataTable('#items', {
+            perPage: 100,
+        });
+
+        document.getElementById("search").addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                // scanning a usps barcode provides addtl data that we dont need
+                let tracking = event.target.value.substring(event.target.value.length - 22)
+                // search()
+                // let searchBox = document.getElementById("dt-search-0")
+                // searchBox.
+                table.search(tracking).draw()
+            }
+        });
+    });
 </script>
+
 
 <h1>Inventory</h1>
 
@@ -26,23 +44,36 @@
 
 <h2>Purchases</h2>
 
-<table>
+<label for="search">Search:</label>
+<input id="search" type="text" value="">
+
+<table id="items">
+    <thead>
     <tr>
         <th>Id</th>
-        <th></th>
+        <th>Title</th>
+        <th>Bought</th>
         <th>Item</th>
         <th>Price</th>
         <th>Links</th>
+        <th>Shipping</th>
     </tr>
+    </thead>
     {% for item in items %}
     <tr>
         <td>
-            <input type="text" value="{{ item.system_id }}" hx-patch="{% url 'item_detail' pk=item.item_id %}" hx-trigger="blur" hx-vals="js:{ 'id': '{{ item.item_id }}', 'system_id': event.target.subl value }" />
+            <input style="width:40px;" type="text" value="{{ item.system_id }}" hx-patch="{% url 'item_detail' pk=item.item_id %}"
+                   hx-trigger="blur" hx-vals="js:{ 'id': '{{ item.item_id }}', 'system_id': event.target.value }"/>
+        </td>
+        <td>
+            <input type="text" value="{{ item.system_title }}" hx-patch="{% url 'item_detail' pk=item.item_id %}"
+                   hx-trigger="blur" hx-vals="js:{ 'id': '{{ item.item_id }}', 'system_title': event.target.value }"/>
         </td>
         <td>{{ item.bought_date }}</td>
         <td>{{ item.title }}</td>
         <td>{{ item.bought_price }}</td>
         <td><a target="_blank" href="{{ item.order_id_url }}">Order</a></td>
+        <td>{{ item.bought_tracking_number }}</td>
     </tr>
     {% endfor %}
 </table>

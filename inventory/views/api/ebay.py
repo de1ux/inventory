@@ -42,18 +42,28 @@ def refresh_purchases(request):
         for item_id, purchase in purchases.items():
             try:
                 transaction = api.get_item_transactions(item_id)
-                order_id = transaction["GetItemTransactionsResponse"]["TransactionArray"]["Transaction"][
-                    "ExtendedOrderID"]
+                t = transaction["GetItemTransactionsResponse"]["TransactionArray"]["Transaction"]
+                order_id = t["ExtendedOrderID"]
+                try:
+                    tracking_number = t["ShippingDetails"]["ShipmentTrackingDetails"]["ShipmentTrackingNumber"]
+                except TypeError:
+                    tracking_number = t["ShippingDetails"]["ShipmentTrackingDetails"][0]["ShipmentTrackingNumber"]
+                except KeyError:
+                    # not available yet
+                    tracking_number = None
+
 
                 yield f"event: log\ndata: Adding item {item_id} with order {order_id}<br />\n\n"
-                await EbayItem.objects.aupdate_or_create(
-                    item_id=item_id,
-                    order_id=order_id,
-                    title=purchase["Transaction"]["Item"]["Title"],
-                    bought_price=float(purchase["Transaction"]["TotalTransactionPrice"]["#text"]),
-                    bought_date=purchase["Transaction"]["PaidTime"],
-                    user=request.user
-                )
+                item, _ = await EbayItem.objects.aupdate_or_create(item_id=item_id)
+                item.__dict__.update({
+                    "order_id": order_id,
+                    "title": purchase["Transaction"]["Item"]["Title"],
+                    "bought_price": float(purchase["Transaction"]["TotalTransactionPrice"]["#text"]),
+                    "bought_date": purchase["Transaction"]["PaidTime"],
+                    "bought_tracking_number": tracking_number,
+                    "user": request.user
+                })
+                await item.asave()
             except Exception as e:
                 yield f"event: log\ndata: Failed to add item {item_id}: {e}<br />\n\n"
 

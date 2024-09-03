@@ -17,13 +17,14 @@ class BadRefreshToken(Exception):
 
 
 class EbayItem(models.Model):
-
     item_id = models.CharField(max_length=255, primary_key=True)
     order_id = models.CharField(max_length=255)
     system_id = models.CharField(max_length=255, null=True)
+    system_title = models.CharField(max_length=255, null=True)
     title = models.CharField(max_length=255)
     bought_price = models.FloatField()
     bought_date = models.DateTimeField()
+    bought_tracking_number = models.CharField(max_length=255, null=True)
     user = models.ForeignKey("User", on_delete=models.CASCADE)
 
     class State(models.TextChoices):
