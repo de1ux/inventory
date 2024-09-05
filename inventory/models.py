@@ -24,6 +24,7 @@ class EbayItem(models.Model):
     title = models.CharField(max_length=255)
     bought_price = models.FloatField()
     bought_date = models.DateTimeField()
+    net_profit = models.FloatField(null=True)
     bought_tracking_number = models.CharField(max_length=255, null=True)
     user = models.ForeignKey("User", on_delete=models.CASCADE)
 

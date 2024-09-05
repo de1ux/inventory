@@ -12,6 +12,17 @@
         htmx.process(document.body);
     }
 
+    function refreshSales() {
+        let sales = document.getElementById("sales")
+        if (sales.hasAttribute("hx-ext")) {
+            sales.removeAttribute("hx-ext")
+            htmx.process(document.body);
+        }
+        sales.setAttribute("hx-ext", "sse")
+        htmx.process(document.body);
+    }
+
+
     $(document).ready(function () {
         let table = new DataTable('#items', {
             perPage: 100,
@@ -42,6 +53,12 @@
          sse-close="done"></div>
 </div>
 
+<button onclick="refreshSales()">Refresh sales</button>
+<div class="log">
+    <div id="sales" sse-connect="{% url 'refresh_sales' %}" hx-swap="beforebegin" sse-swap="log"
+         sse-close="done"></div>
+</div>
+
 <h2>Purchases</h2>
 
 <label for="search">Search:</label>
@@ -57,23 +74,28 @@
         <th>Price</th>
         <th>Links</th>
         <th>Shipping</th>
+        <th></th>
     </tr>
     </thead>
     {% for item in items %}
     <tr>
         <td>
-            <input style="width:40px;" type="text" value="{{ item.system_id }}" hx-patch="{% url 'item_detail' pk=item.item_id %}"
+            <input style="width:40px;" type="text" value="{{ item.system_id|default_if_none:'' }}" hx-patch="{% url 'item_detail' pk=item.item_id %}"
                    hx-trigger="blur" hx-vals="js:{ 'id': '{{ item.item_id }}', 'system_id': event.target.value }"/>
         </td>
         <td>
-            <input type="text" value="{{ item.system_title }}" hx-patch="{% url 'item_detail' pk=item.item_id %}"
+            <input type="text" value="{{ item.system_title|default_if_none:'' }}" hx-patch="{% url 'item_detail' pk=item.item_id %}"
                    hx-trigger="blur" hx-vals="js:{ 'id': '{{ item.item_id }}', 'system_title': event.target.value }"/>
         </td>
         <td>{{ item.bought_date }}</td>
         <td>{{ item.title }}</td>
-        <td>{{ item.bought_price }}</td>
-        <td><a target="_blank" href="{{ item.order_id_url }}">Order</a></td>
+        <td>
+            <input style="width:80px;" type="number" value="{{ item.bought_price|default_if_none:'' }}" hx-patch="{% url 'item_detail' pk=item.item_id %}"
+                   hx-trigger="blur" hx-vals="js:{ 'id': '{{ item.item_id }}', 'bought_price': event.target.value }"/>
+        </td>
+        <td><a target="_blank" href="{{ item.order_id_url }}">{{ item.order_id }}</a></td>
         <td>{{ item.bought_tracking_number }}</td>
+        <td><button hx-get="{% url 'refresh_item' item.item_id %}" hx-swap="innerHTML">Refresh</button></td>
     </tr>
     {% endfor %}
 </table>

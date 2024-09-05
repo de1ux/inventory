@@ -59,7 +59,6 @@ class TradingApi:
             "X-EBAY-API-COMPATIBILITY-LEVEL": "967",
         })
         r.raise_for_status()
-
         return xmltodict.parse(r.text)
 
     def get_purchases(self):
@@ -79,6 +78,14 @@ class TradingApi:
             i[item_id] = purchase
 
         return i
+
+    def get_sales(self):
+        r = requests.get("https://api.ebay.com/sell/fulfillment/v1/order", headers={
+            "Authorization": f"Bearer {self._token}",
+            "Content-Type": "application/json",
+        })
+        r.raise_for_status()
+        return r.json()
 
     def get_account(self):
         r = requests.post("https://api.ebay.com/ws/api.dll", data=GET_ACCOUNT_REQUEST, headers={
