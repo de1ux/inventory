@@ -24,7 +24,7 @@ class EbayItem(models.Model):
     title = models.CharField(max_length=255)
     bought_price = models.FloatField()
     bought_date = models.DateTimeField()
-    net_profit = models.FloatField(null=True)
+    gross_profit = models.FloatField(null=True)
     bought_tracking_number = models.CharField(max_length=255, null=True)
     user = models.ForeignKey("User", on_delete=models.CASCADE)
 
@@ -34,10 +34,15 @@ class EbayItem(models.Model):
         ON_SHELF_LISTED = "ON_SHELF_LISTED", "listed"
         SHIPPED = "SHIPPED", "shipped"
 
-    state = models.CharField(max_length=255, choices=State.choices, default=State.ON_SHELF)
+    state = models.CharField(max_length=255, choices=State.choices, default=State.IN_FLIGHT)
 
     def order_id_url(self):
         return f"https://order.ebay.com/ord/show?orderId={self.order_id}#/"
+
+    def net_profit(self):
+        if self.gross_profit is None:
+            return None
+        return self.gross_profit - self.bought_price
 
 
 class User(AbstractUser):

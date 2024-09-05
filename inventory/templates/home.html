@@ -25,7 +25,7 @@
 
     $(document).ready(function () {
         let table = new DataTable('#items', {
-            perPage: 100,
+            paging: false,
         });
 
         document.getElementById("search").addEventListener("keydown", function (event) {
@@ -70,8 +70,11 @@
         <th>Id</th>
         <th>Title</th>
         <th>Bought</th>
+        <th>State</th>
         <th>Item</th>
         <th>Price</th>
+        <th>Gross profit (no shipping)</th>
+        <th>Net profit (no shipping)</th>
         <th>Links</th>
         <th>Shipping</th>
         <th></th>
@@ -88,11 +91,21 @@
                    hx-trigger="blur" hx-vals="js:{ 'id': '{{ item.item_id }}', 'system_title': event.target.value }"/>
         </td>
         <td>{{ item.bought_date }}</td>
+        <td>
+            <select hx-swap="none" hx-trigger="change" hx-patch="{% url 'item_detail' pk=item.item_id %}" hx-vals="js:{ 'id': '{{ item.item_id }}', 'state': event.target.value }">
+                <option {% if item.state == 'IN_FLIGHT' %}selected="selected"{% endif %} value="IN_FLIGHT">IN_FLIGHT</option>
+                <option {% if item.state == 'ON_SHELF' %}selected="selected"{% endif %} value="ON_SHELF">ON_SHELF</option>
+                <option {% if item.state == 'ON_SHELF_LISTED' %}selected="selected"{% endif %} value="ON_SHELF_LISTED">ON_SHELF_LISTED</option>
+                <option {% if item.state == 'SHIPPED' %}selected="selected"{% endif %} value="SHIPPED">SHIPPED</option>
+            </select>
+        </td>
         <td>{{ item.title }}</td>
         <td>
             <input style="width:80px;" type="number" value="{{ item.bought_price|default_if_none:'' }}" hx-patch="{% url 'item_detail' pk=item.item_id %}"
                    hx-trigger="blur" hx-vals="js:{ 'id': '{{ item.item_id }}', 'bought_price': event.target.value }"/>
         </td>
+        <td>{{ item.gross_profit|default_if_none:'' }}</td>
+        <td>{{ item.net_profit|default_if_none:'' }}</td>
         <td><a target="_blank" href="{{ item.order_id_url }}">{{ item.order_id }}</a></td>
         <td>{{ item.bought_tracking_number }}</td>
         <td><button hx-get="{% url 'refresh_item' item.item_id %}" hx-swap="innerHTML">Refresh</button></td>
