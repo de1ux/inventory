@@ -16,10 +16,14 @@ class BadRefreshToken(Exception):
     pass
 
 
+class SystemId(models.Model):
+    id = models.AutoField(primary_key=True)
+
+
 class EbayItem(models.Model):
     item_id = models.CharField(max_length=255, primary_key=True)
     order_id = models.CharField(max_length=255)
-    system_id = models.CharField(max_length=255, null=True)
+    system_id = models.ForeignKey("SystemId", on_delete=models.SET_NULL, null=True)
     system_title = models.CharField(max_length=255, null=True)
     title = models.CharField(max_length=255)
     bought_price = models.FloatField()

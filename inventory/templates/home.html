@@ -83,8 +83,13 @@
     {% for item in items %}
     <tr>
         <td>
-            <input style="width:40px;" type="text" value="{{ item.system_id|default_if_none:'' }}" hx-patch="{% url 'item_detail' pk=item.item_id %}"
-                   hx-trigger="blur" hx-vals="js:{ 'id': '{{ item.item_id }}', 'system_id': event.target.value }"/>
+            {% if item.system_id %}
+                {{ item.system_id }}
+            {% else %}
+                <div>
+                    <button hx-get="{% url 'assign_system_id' item.item_id %}" hx-swap="outerHTML">Assign</button>
+                </div>
+            {% endif %}
         </td>
         <td>
             <input type="text" value="{{ item.system_title|default_if_none:'' }}" hx-patch="{% url 'item_detail' pk=item.item_id %}"

@@ -5,12 +5,21 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, StreamingHttpResponse
 
-from inventory.models import EbayItem, User
+from inventory.models import EbayItem, User, SystemId
 from inventory.utils.ebay import TradingApi
 
 import logging
 
 log = logging.getLogger(__name__)
+
+
+@login_required
+def assign_system_id(request, pk=None):
+    item = EbayItem.objects.get(item_id=pk)
+    item.system_id = SystemId.objects.create()
+    item.save()
+
+    return HttpResponse(item.system_id)
 
 
 @login_required
@@ -53,9 +62,8 @@ async def update_item(api, user, item_id, purchase):
         # not available yet
         tracking_number = None
 
-    item, _ = await EbayItem.objects.aupdate_or_create(item_id=item_id)
-
     vals = {
+        "item_id": item_id,
         "order_id": order_id,
         "title": purchase["Transaction"]["Item"]["Title"],
         "bought_date": purchase["Transaction"]["PaidTime"],
@@ -63,13 +71,15 @@ async def update_item(api, user, item_id, purchase):
         "user": user
     }
 
-    if not item.bought_price:
+    try:
+        item = await EbayItem.objects.aget(item_id=item_id)
+        item.__dict__.update(vals)
+        await item.asave()
+    except EbayItem.DoesNotExist:
         # only update the vals if its not set: sometimes we do custom pricing (like for bundles), and dont
         # want this value overwritten
-        vals["bought_price"] = float(t["MonetaryDetails"]["Payments"]["Payment"]["PaymentAmount"]["#text"]),
-
-    item.__dict__.update(vals)
-    await item.asave()
+        vals["bought_price"] = float(t["MonetaryDetails"]["Payments"]["Payment"]["PaymentAmount"]["#text"])
+        await EbayItem.objects.acreate(**vals)
 
 
 def stream_log(msg):

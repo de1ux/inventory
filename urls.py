@@ -32,6 +32,7 @@ urlpatterns = [
 
     path('api/ebay/item/<str:pk>', views.api.item.ItemDetailView.as_view(), name="item_detail"),
     path('api/ebay/item/<str:pk>/refresh', views.api.ebay.refresh_item, name="refresh_item"),
+    path('api/ebay/item/<str:pk>/assign', views.api.ebay.assign_system_id, name="assign_system_id"),
 
     path('', views.home.home, name='home')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
